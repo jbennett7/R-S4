@@ -112,7 +112,7 @@ setMethod(
     }
 )
 setReplaceMethod(
-    f="["
+    f="[",
     signature="Trajectories",
     definition=function(x,i,j,value){
         if(i=="times"){x@times <- value}else{}
@@ -166,6 +166,18 @@ setMethod("initialize",
     }
 )
 
+setClass(
+    Class="Partition",
+    representation=representation(
+        nbGroups="numeric",
+        part="factor"
+    )
+)
+setGeneric("getNbGroups",function(object){standardGeneric("getNbGroups")})
+setMethod("getNbGroups","Partition",function(object){return(object@nbGroups)})
+setGeneric("getPart",function(object){standardGeneric("getPart")})
+setMethod("getPart","Partition",function(object){return(object@part)})
+
 slotNames("Trajectories")
 getSlots("Trajectories")
 getClass("Trajectories")
@@ -185,3 +197,43 @@ new(Class="Trajectories", times=1:2,traj=matrix(1:2,ncol=2))
 new(Class="Trajectories", times=c(1,2,4,8), traj=matrix(1:8,nrow=2))
 new(Class="TrajectoriesBis", nbWeek=4, BMIinit=c(16,17,15.6))
 trajectories(time=c(1,2,4),traj=matrix(1:6,ncol=3))
+
+partCochin <- new(Class="Partition", nbGroups=2, part=factor(c("A","B","A","B")))
+partStAnnie <- new(Class="Partition", nbGroups=2, part=factor(rep(c("A","B"),c(50,30))))
+
+setGeneric("test", function(x,y,...){standardGeneric("test")})
+setMethod("test", "numeric", function(x,y,...){cat("x is numeric =",x,"\n")})
+setMethod("test", "character", function(x,y,...){cat("x is character =",x,"\n")})
+setMethod(
+    f= "test",
+    signature= c(x="numeric", y="character"),
+    definition= function(x,y,...){
+        cat("more complicated...")
+        cat("x is numeric =", x, " AND y is a character = ", y, "\n")
+    }
+)
+test(3.14)
+test("Hello")
+test(3.14,"Goodbye")
+showMethods(test)
+
+setClass(
+    Class="TrajPartitioned",
+    representation=representation(listPartitions="list"),
+    contains="Trajectories"
+)
+tdPitie <- new("TrajPartitioned")
+show(tdPitie)
+unclass(tdPitie)
+
+partCochin2 <- new("Partition", nbGroups=3, part=factor(c("A","C","C","B")))
+#tdCochin <- new(
+#    Class="TrajPartition",
+#    times=c(1,3,4,5),
+#    traj=trajCochin@traj,
+#    listPartitions=list(partCochin,partCochin2)
+#)
+#getMethod("initialize","TrajPartition")
+existsMethod("initialize","TrajPartition")
+hasMethod("initialize","TrajPartition")
+selectMethod("initialize","TrajPartition")
